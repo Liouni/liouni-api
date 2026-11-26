@@ -28,7 +28,9 @@ export class AppService implements OnModuleDestroy {
     const ssl = useSsl ? { rejectUnauthorized: false } : false;
 
     if (connectionString) {
-      return new Pool({ connectionString, ssl, max: 5, connectionTimeoutMillis: 5000 });
+      const parsed = new URL(connectionString);
+      parsed.searchParams.delete('sslmode');
+      return new Pool({ connectionString: parsed.toString(), ssl, max: 5, connectionTimeoutMillis: 5000 });
     }
 
     return new Pool({
