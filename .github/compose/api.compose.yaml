@@ -1,0 +1,26 @@
+services:
+  api:
+    image: ${APP_API_IMAGE:?APP_API_IMAGE is required}
+    restart: unless-stopped
+    stop_grace_period: 30s
+    env_file: [application.env]
+    environment:
+      - PORT=3000
+    extra_hosts:
+      - "db-elite.liouni.com:100.75.67.115"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    expose: ["3000"]
+    ports: ["100.90.103.19:10010:3000"]
+    networks: [npm-network]
+    healthcheck:
+      test: ["CMD-SHELL", "bun -e \"fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    security_opt: [no-new-privileges:true]
+networks:
+  npm-network:
+    external: true
+    name: npm-network
